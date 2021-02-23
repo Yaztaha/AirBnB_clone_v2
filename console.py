@@ -115,16 +115,25 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
+        try:
+            if not line:
+                raise SyntaxError()
+            my_list = line.split(" ")
+            obj = eval("{}()".format(my_list[0]))
+            for i in range(1, len(my_list)):
+                temporal_list = my_list[i].split("=")
+                if len(temporal_list) == 2:
+                    temporal_list[1] = temporal_list[1].replace('_', ' ')
+                    try:
+                        obj.__dict__[temporal_list[0]] = eval(temporal_list[1])
+                    except BaseException:
+                        obj.__dict__[temporal_list[0]] = temporal_list[1]
+            obj.save()
+            print("{}".format(obj.id))
+        except SyntaxError:
             print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
+        except NameError:
             print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
